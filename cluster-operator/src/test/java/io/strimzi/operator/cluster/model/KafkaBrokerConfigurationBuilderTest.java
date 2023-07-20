@@ -33,16 +33,12 @@ import io.strimzi.test.annotations.ParallelSuite;
 import io.strimzi.test.annotations.ParallelTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 import static io.strimzi.operator.cluster.model.KafkaBrokerConfigurationBuilderTest.IsEquivalent.isEquivalent;
 import static java.util.Arrays.asList;
@@ -1756,39 +1752,39 @@ public class KafkaBrokerConfigurationBuilderTest {
                 .withFailFast(false)
                 .build();
 
-        List<String> expectedOptions = new ArrayList<>(5);
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_CLIENT_ID, "my-kafka-id"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_VALID_ISSUER_URI, "http://valid-issuer"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_CHECK_ISSUER, false));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_CHECK_AUDIENCE, true));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_CUSTOM_CLAIM_CHECK, "@.aud && @.aud == 'something'"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_SCOPE, "messaging"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_AUDIENCE, "kafka"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_JWKS_ENDPOINT_URI, "http://jwks-endpoint"));
-        expectedOptions.add(String.format("%s=\"%d\"", ServerConfig.OAUTH_JWKS_REFRESH_SECONDS, 50));
-        expectedOptions.add(String.format("%s=\"%d\"", ServerConfig.OAUTH_JWKS_EXPIRY_SECONDS, 160));
-        expectedOptions.add(String.format("%s=\"%d\"", ServerConfig.OAUTH_JWKS_REFRESH_MIN_PAUSE_SECONDS, 5));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_JWKS_IGNORE_KEY_USE, true));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_INTROSPECTION_ENDPOINT_URI, "http://introspection-endpoint"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_USERINFO_ENDPOINT_URI, "http://userinfo-endpoint"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_USERNAME_CLAIM, "preferred_username"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_FALLBACK_USERNAME_CLAIM, "client_id"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_FALLBACK_USERNAME_PREFIX, "client-account-"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_ACCESS_TOKEN_IS_JWT, false));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_CHECK_ACCESS_TOKEN_TYPE, false));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_VALID_TOKEN_TYPE, "access_token"));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM, ""));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_CONNECT_TIMEOUT_SECONDS, 30));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_READ_TIMEOUT_SECONDS, 60));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_HTTP_RETRIES, 2));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_HTTP_RETRY_PAUSE_MILLIS, 500));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_ENABLE_METRICS, true));
-        expectedOptions.add(String.format("%s=\"%s\"", ServerConfig.OAUTH_FAIL_FAST, false));
+        Map<String, String> expectedOptions = new HashMap<>();
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_CLIENT_ID, "my-kafka-id");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_VALID_ISSUER_URI, "http://valid-issuer");
+        KafkaBrokerConfigurationBuilder.addBooleanOptionIfFalse(expectedOptions, ServerConfig.OAUTH_CHECK_ISSUER, false);
+        KafkaBrokerConfigurationBuilder.addBooleanOptionIfTrue(expectedOptions, ServerConfig.OAUTH_CHECK_AUDIENCE, true);
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_CUSTOM_CLAIM_CHECK, "@.aud && @.aud == 'something'");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_SCOPE, "messaging");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_AUDIENCE, "kafka");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_JWKS_ENDPOINT_URI, "http://jwks-endpoint");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_JWKS_REFRESH_SECONDS, "50");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_JWKS_EXPIRY_SECONDS, "160");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_JWKS_REFRESH_MIN_PAUSE_SECONDS, "5");
+        KafkaBrokerConfigurationBuilder.addBooleanOptionIfTrue(expectedOptions, ServerConfig.OAUTH_JWKS_IGNORE_KEY_USE, true);
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_INTROSPECTION_ENDPOINT_URI, "http://introspection-endpoint");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_USERINFO_ENDPOINT_URI, "http://userinfo-endpoint");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_USERNAME_CLAIM, "preferred_username");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_FALLBACK_USERNAME_CLAIM, "client_id");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_FALLBACK_USERNAME_PREFIX, "client-account-");
+        KafkaBrokerConfigurationBuilder.addBooleanOptionIfFalse(expectedOptions, ServerConfig.OAUTH_ACCESS_TOKEN_IS_JWT, false);
+        KafkaBrokerConfigurationBuilder.addBooleanOptionIfFalse(expectedOptions, ServerConfig.OAUTH_CHECK_ACCESS_TOKEN_TYPE, false);
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_VALID_TOKEN_TYPE, "access_token");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM, "");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_CONNECT_TIMEOUT_SECONDS, "30");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_READ_TIMEOUT_SECONDS, "60");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_HTTP_RETRIES, "2");
+        KafkaBrokerConfigurationBuilder.addOption(expectedOptions, ServerConfig.OAUTH_HTTP_RETRY_PAUSE_MILLIS, "500");
+        KafkaBrokerConfigurationBuilder.addBooleanOptionIfTrue(expectedOptions, ServerConfig.OAUTH_ENABLE_METRICS, true);
+        KafkaBrokerConfigurationBuilder.addBooleanOptionIfFalse(expectedOptions, ServerConfig.OAUTH_FAIL_FAST, false);
 
         // enablePlain and tokenEndpointUri are handled separately from getOAuthOptions
-        List<String> actualOptions = KafkaBrokerConfigurationBuilder.getOAuthOptions(auth);
+        Map<String, String> actualOptions = KafkaBrokerConfigurationBuilder.getOAuthOptions(auth);
 
-        assertThat(actualOptions, is(equalTo(expectedOptions)));
+        assertThat(actualOptions, Matchers.equalTo(expectedOptions));
     }
 
     @ParallelTest
@@ -1934,9 +1930,8 @@ public class KafkaBrokerConfigurationBuilderTest {
         KafkaListenerAuthenticationOAuth auth = new KafkaListenerAuthenticationOAuthBuilder()
                 .build();
 
-        List<String> actualOptions = KafkaBrokerConfigurationBuilder.getOAuthOptions(auth);
-
-        assertThat(actualOptions, is(equalTo(Collections.emptyList())));
+        Map<String, String> actualOptions = KafkaBrokerConfigurationBuilder.getOAuthOptions(auth);
+        assertThat(actualOptions, Matchers.equalTo(Collections.emptyMap()));
     }
 
     static class IsEquivalent extends TypeSafeMatcher<String> {
